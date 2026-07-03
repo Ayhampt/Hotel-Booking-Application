@@ -17,7 +17,7 @@ export async function createHotel(hotelData: createHotelDto) {
 
 export async function getHotelById(id: number) {
   const hotel = await Hotel.findByPk(id);
-  if (!hotel) {
+  if (!hotel || hotel.deletedAt !== null) {
     logger.error(`Hotel not found ${id}`);
     throw new NotFoundError("Hotel not found");
   }
