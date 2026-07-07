@@ -1,8 +1,10 @@
-import express from "express"
-import pingRouter from "./ping.router"
+import express from "express";
+import pingRouter from "./ping.router";
+import bookingRouter from "./booking.router";
 
-const v1Router = express()
+const v1Router = express();
 
-v1Router.use("/ping",pingRouter)
+v1Router.use("/ping", pingRouter);
+v1Router.use("/booking", bookingRouter);
 
-export default v1Router 
+export default v1Router;
