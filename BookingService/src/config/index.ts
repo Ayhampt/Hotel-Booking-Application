@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 
 type serverConfig = {
   PORT: number;
+  REDIS_URL: string;
+  LOCK_TTL: number;
 };
 type DBConfig = {
   DB_HOST: string;
@@ -18,6 +20,8 @@ loadEnv();
 
 export const serverConfig: serverConfig = {
   PORT: Number(process.env.PORT) || 8080,
+  REDIS_URL: process.env.REDIS_URL || "redis://localhost:6379",
+  LOCK_TTL: Number(process.env.LOCK_TTL) || 60000,
 };
 export const DBConfig: DBConfig = {
   DB_HOST: process.env.DB_HOST || "localhost",
