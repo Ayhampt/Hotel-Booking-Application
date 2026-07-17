@@ -4,6 +4,7 @@ import v1Router from "./routers/v1/index.router";
 import { genericErrorHandler } from "./middlewares/error.middleware";
 import logger from "./config/logger";
 import { attachCorrelationMiddleware } from "./middlewares/correlationId.middleware";
+import { addEmailToQueue } from "./producer/email.producer";
 
 const app = express();
 
@@ -20,4 +21,16 @@ app.use(genericErrorHandler);
 app.listen(serverConfig.PORT, () => {
   logger.info(`Server running on port http://localhost:${serverConfig.PORT}`);
   logger.info(`press CTL+C to stop the Server`);
+
+  for(let i=0;i<1;i++){
+    addEmailToQueue({
+      to: `sample from booking ${i}`,
+      subject: "Sample Email booking",
+      templateId: "sample-template",
+      params: {
+        name: "John Doe",
+        orderId: "12345",
+      }
+    });
+  }
 });

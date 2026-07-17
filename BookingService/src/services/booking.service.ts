@@ -13,7 +13,7 @@ import {
   NotFoundError,
 } from "../utils/errors/app.error";
 import PrismaClient from "../prisma/client";
-import { redLock } from "../config/redis";
+import { redLock } from "../config/redis.config";
 import { serverConfig } from "../config";
 
 export async function createBookingService(createBookingDto: createBookingDto) {
