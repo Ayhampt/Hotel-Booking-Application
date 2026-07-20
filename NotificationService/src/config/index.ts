@@ -5,6 +5,8 @@ type serverConfig = {
   PORT: number;
   REDIS_PORT: number;
   REDIS_HOST: string;
+  MAILER_EMAIL: string;
+  MAILER_PASSWORD: string;
 };
 type DBConfig = {
   DB_HOST: string;
@@ -22,6 +24,8 @@ export const serverConfig: serverConfig = {
   PORT: Number(process.env.PORT) || 8002,
   REDIS_PORT: Number(process.env.REDIS_PORT) || 6378,
   REDIS_HOST: process.env.REDIS_HOST || "localhost",
+  MAILER_EMAIL: process.env.MAILER_EMAIL || " ",
+  MAILER_PASSWORD: process.env.MAILER_PASSWORD || " ",
 };
 export const DBConfig: DBConfig = {
   DB_HOST: process.env.DB_HOST || "localhost",

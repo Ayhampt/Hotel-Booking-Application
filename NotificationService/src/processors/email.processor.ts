@@ -3,7 +3,8 @@ import { MAILER_QUEUE } from "../queues/mailer.queue";
 import { MAILER_PAYLOAD } from "../producers/email.producer";
 import { NotificationDto } from "../dto/notification.dto";
 import { getRedisConnectionObject } from "../config/redis.config";
-
+import { renderEmailTemplate } from "../templates/templates.handlebars";
+import { sendEmail } from "../services/mailer.service";
 
 export const setupMailerWorker = new Worker<NotificationDto>(
   MAILER_QUEUE,
@@ -13,6 +14,12 @@ export const setupMailerWorker = new Worker<NotificationDto>(
     }
     const payload = job.data;
     console.log(`processing email for ${JSON.stringify(payload)}`);
+    
+    const emailContent = await renderEmailTemplate(
+      payload.templateId,
+      payload.params,
+    );
+    await sendEmail(payload.to, payload.subject, emailContent);
   },
   {
     connection: getRedisConnectionObject(),

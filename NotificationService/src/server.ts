@@ -5,8 +5,6 @@ import { genericErrorHandler } from "./middlewares/error.middleware";
 import logger from "./config/logger";
 import { attachCorrelationMiddleware } from "./middlewares/correlationId.middleware";
 import { setupMailerWorker } from "./processors/email.processor";
-import { NotificationDto } from "./dto/notification.dto";
-import { addEmailToQueue } from "./producers/email.producer";
 
 const app = express();
 
@@ -25,15 +23,4 @@ app.listen(serverConfig.PORT, () => {
   logger.info(`press CTL+C to stop the Server`);
   setupMailerWorker;
   logger.info("mailer worker started");
-
-  const sampleNotification: NotificationDto = {
-    to: "ZBk6w@example.com",
-    subject: "test subject",
-    templateId: "test-template",
-    params: {
-      name: "joe Doe",
-      orderId: 796732,
-    },
-  };
-  addEmailToQueue(sampleNotification);
 });
