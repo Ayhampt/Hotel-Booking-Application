@@ -6,7 +6,7 @@ import {
 } from "sequelize";
 import sequelize from "./sequelize";
 
-enum RoomType {
+export enum RoomType {
   SINGLE = "SINGLE",
   DOUBLE = "DOUBLE",
   FAMILY = "FAMILY",
