@@ -1,33 +1,33 @@
 import { createHotelDto } from "../dto/hotel.dto";
-import {
-  createHotel,
-  getAllHotels,
-  getHotelById,
-  softDeleteHotel,
-  updateHotel,
-} from "../repositories/hotel.repository";
+
+import { HotelRepository } from "../repositories/hotel.repository";
+
+const hotelRepository = new HotelRepository();
 
 export async function createHotelService(hotelData: createHotelDto) {
-  const hotel = await createHotel(hotelData);
+  const hotel = await hotelRepository.create(hotelData);
   return hotel;
 }
 
 export async function getHotelByIdService(id: number) {
-  const hotel = await getHotelById(id);
+  const hotel = await hotelRepository.findById(id);
   return hotel;
 }
 
 export async function getAllHotelsService() {
-  const hotels = await getAllHotels();
+  const hotels = await hotelRepository.findAlHotel();
   return hotels;
 }
 
 export async function softDeleteHotelService(id: number) {
-  await softDeleteHotel(id);
+  await hotelRepository.softDeleteHotel(id);
   return true;
 }
 
-export async function updateHotelService(id:number,hotelData:createHotelDto) {
-  const hotel = await updateHotel(id,hotelData);
-  return hotel
+export async function updateHotelService(
+  id: number,
+  hotelData: createHotelDto,
+) {
+  const hotel = await hotelRepository.update(id, hotelData);
+  return hotel;
 }
