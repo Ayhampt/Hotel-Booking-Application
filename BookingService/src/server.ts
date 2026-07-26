@@ -24,12 +24,12 @@ app.listen(serverConfig.PORT, () => {
 
   for(let i=0;i<1;i++){
     addEmailToQueue({
-      to: `sample from booking ${i}`,
+      to: `ayhampt@gmail.com`,
       subject: "Sample Email booking",
-      templateId: "sample-template",
+      templateId: "welcome",
       params: {
-        name: "John Doe",
-        orderId: "12345",
+        name: "ayham",
+        appName: "booking.com",
       }
     });
   }
