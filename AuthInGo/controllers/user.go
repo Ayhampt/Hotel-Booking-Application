@@ -19,3 +19,8 @@ func (uc *UserController) RegisterUser(w http.ResponseWriter,r *http.Request) {
 	uc.UserService.CreateUser()
 	w.Write([]byte("User registration endpoint"))
 }
+
+func (uc *UserController) GetUserById(w http.ResponseWriter,r *http.Request) {
+	uc.UserService.GetUserById()
+	w.Write([]byte("Get user by id endpoint"))
+}
