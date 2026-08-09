@@ -7,10 +7,11 @@ import (
 )
 
 type UserRepository interface {
-	Create() (*models.User,error)
+	Create(username string, email string, hashedPassword string) (*models.User, error)
 	GetById() error
 	GetAll() ([]*models.User,error)
-	DeleteById() error
+	DeleteById(id int64) error
+	GetByEmail(email string) (*models.User,error)
 }
 
 type UserRepositoryImpl struct {
@@ -23,12 +24,12 @@ func NewUserRepository(_db *sql.DB) UserRepository {
 	}
 }
 
-func (u *UserRepositoryImpl) Create() (*models.User,error){
+func (u *UserRepositoryImpl) Create(username string, email string, hashedPassword string) (*models.User, error) {
 	query := "INSERT INTO users (username,email,password) VALUES (?,?,?)"
-	result,err := u.db.Exec(query,"testUser","test1@gmail.com","test2026")
+	result, err := u.db.Exec(query, username, email, hashedPassword)
 
 	if err != nil {
-		fmt.Println("Error Inserting User",err)
+		fmt.Println("Error Inserting User", err)
 		return nil,err
 	}
 	rowAffected,rowErr := result.RowsAffected()
@@ -92,30 +93,7 @@ func (u *UserRepositoryImpl) GetAll() ([]*models.User,error) {
 	return users,nil
 }
 
-func (u *UserRepositoryImpl) DeleteById() error {
-
-	query := "DELETE FROM users WHERE id = ?"
-	result,err := u.db.Exec(query,1)
-	if err != nil {
-		fmt.Println("Error deleting user",err)
-		return err
-	}
-	rowAffected,rowErr := result.RowsAffected()
-	if rowErr != nil {
-		fmt.Println("Error getting row Effected",rowErr)
-		return rowErr
-	}
-	if rowAffected == 0 {
-		fmt.Println("no row affected user not deleted")
-		return nil
-	}
-	fmt.Println("User deleted successfully user deleted")
-
-	return  nil
- }
-
-
-func (u *UserRepositoryImpl) DeleteByID(id int64) error {
+func (u *UserRepositoryImpl) DeleteById(id int64) error {
 	query := "DELETE FROM users WHERE id = ?"
 	result, err := u.db.Exec(query, id)
 
@@ -144,7 +122,7 @@ func (u *UserRepositoryImpl) GetByEmail(email string) (*models.User, error) {
 
 	user := &models.User{}
 
-	err := row.Scan(&user.Id, &user.Email, &user.Password) // hashed password
+	err := row.Scan(&user.Id, &user.Email, &user.Password) 
 
 	if err != nil {
 		if err == sql.ErrNoRows {

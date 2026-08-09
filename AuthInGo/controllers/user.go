@@ -24,3 +24,8 @@ func (uc *UserController) GetUserById(w http.ResponseWriter,r *http.Request) {
 	uc.UserService.GetUserById()
 	w.Write([]byte("Get user by id endpoint"))
 }
+
+func (uc *UserController) LoginUser(w http.ResponseWriter,r *http.Request) {
+	uc.UserService.LoginUser()
+	w.Write([]byte("Login user endpoint"))
+}
