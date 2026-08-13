@@ -32,18 +32,20 @@ func (u *UserRepositoryImpl) Create(username string, email string, hashedPasswor
 		fmt.Println("Error Inserting User", err)
 		return nil,err
 	}
-	rowAffected,rowErr := result.RowsAffected()
+	lastInsertedId, rowErr := result.LastInsertId()
 	if rowErr != nil {
-		fmt.Println("Error getting row Effected",rowErr)
+		fmt.Println("Error getting last inserted id", rowErr)
 		return nil,rowErr
 	}
-	if rowAffected == 0 {
-		fmt.Println("no row affected user not created")
-		return nil,nil
+	user := &models.User{
+		Id: lastInsertedId,
+		Username: username,
+		Email: email,
 	}
-	fmt.Println("User created successfully user created")
-	return nil,nil
-}
+	fmt.Println("User Created Successfully", user)
+	return user,nil
+	}
+
 
 func (u *UserRepositoryImpl) GetById(id string) (*models.User,error) {
 	query := "SELECT id,username,email,created_at,updated_at FROM users WHERE id = ?"
