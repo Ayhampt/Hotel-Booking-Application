@@ -8,7 +8,7 @@ import (
 
 type UserRepository interface {
 	Create(username string, email string, hashedPassword string) (*models.User, error)
-	GetById() error
+	GetById(id string) (*models.User,error)
 	GetAll() ([]*models.User,error)
 	DeleteById(id int64) error
 	GetByEmail(email string) (*models.User,error)
@@ -45,7 +45,7 @@ func (u *UserRepositoryImpl) Create(username string, email string, hashedPasswor
 	return nil,nil
 }
 
-func (u *UserRepositoryImpl) GetById() error {
+func (u *UserRepositoryImpl) GetById(id string) (*models.User,error) {
 	query := "SELECT id,username,email,created_at,updated_at FROM users WHERE id = ?"
 
 	row := u.db.QueryRow(query,1)
@@ -55,14 +55,14 @@ func (u *UserRepositoryImpl) GetById() error {
 	if err != nil {
 		if err == sql.ErrNoRows {
 			fmt.Println("No user found with given Id")
-			return nil
+			return nil,nil
 		} else {
 			fmt.Println("Error scanning user",err)
-			return err
+			return nil,err
 		}
 	}
 	fmt.Println("User fetched successfully",user)
-	return nil
+	return user,nil
 
 }
 
@@ -122,7 +122,7 @@ func (u *UserRepositoryImpl) GetByEmail(email string) (*models.User, error) {
 
 	user := &models.User{}
 
-	err := row.Scan(&user.Id, &user.Email, &user.Password) 
+	err := row.Scan(&user.Id, &user.Email, &user.Password)
 
 	if err != nil {
 		if err == sql.ErrNoRows {

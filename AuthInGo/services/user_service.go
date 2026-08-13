@@ -4,6 +4,7 @@ import (
 	env "AuthInGo/config/env"
 	db "AuthInGo/db/repositories"
 	dto "AuthInGo/dto"
+	"AuthInGo/models"
 	"AuthInGo/utils"
 	"fmt"
 
@@ -11,8 +12,8 @@ import (
 )
 
 type UserService interface {
-	CreateUser() error
-	GetUserById() error
+	CreateUser(payload *dto.CreateUserRequestDto) (*models.User, error)
+	GetUserById(id string) (*models.User, error)
 	LoginUser(payload *dto.LoginUserRequestDto) (string, error)
 }
 
@@ -26,16 +27,20 @@ func NewUserService(_userRepository db.UserRepository) UserService {
 	}
 }
 
-func (u *UserServiceImpl) CreateUser() error {
+func (u *UserServiceImpl) CreateUser(payload *dto.CreateUserRequestDto) (*models.User, error) {
 	fmt.Println("Creating user in UserService")
-	password := "test2026"
+	password := payload.Password
 	hashedPassword, err := utils.HashPassword(password)
 	if err != nil {
 		fmt.Println("Error hashing password", err)
-		return err
+		return nil, err
 	}
-	u.userRepository.Create("ayhaj", "ayhsa@gmail.com", hashedPassword)
-	return nil
+	user,err := u.userRepository.Create(payload.Username, payload.Email, hashedPassword)
+	if err != nil {
+		fmt.Println("Error creating user in repository", err)
+		return nil, err
+	}
+	return user,nil
 }
 
 func (u *UserServiceImpl) LoginUser(payload *dto.LoginUserRequestDto) (string,error) {
@@ -76,8 +81,12 @@ func (u *UserServiceImpl) LoginUser(payload *dto.LoginUserRequestDto) (string,er
 }
 
 
-func (u *UserServiceImpl) GetUserById() error {
+func (u *UserServiceImpl) GetUserById(id string) (*models.User,error) {
 	fmt.Println("Getting user by Id")
-	u.userRepository.GetById()
-	return nil
+	user,err := u.userRepository.GetById(id)
+	if err != nil {
+		fmt.Println("Error fetching user by Id:",err)
+		return nil,err
+	}
+	return user,nil
 }
