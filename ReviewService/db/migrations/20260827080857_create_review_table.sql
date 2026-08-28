@@ -1,0 +1,14 @@
+-- +goose Up
+CREATE TABLE reviews (
+  id SERIAL PRIMARY KEY,
+  user_id VARCHAR(255) NOT NULL,
+  hotel_id VARCHAR(255) NOT NULL,
+  booking_id VARCHAR(255) NOT NULL,
+  comment VARCHAR(255) ,
+  rating INTEGER ,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- +goose Down
+DROP TABLE reviews;
