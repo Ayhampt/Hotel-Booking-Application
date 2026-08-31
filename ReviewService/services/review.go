@@ -21,14 +21,18 @@ func NewReviewService(_ReviewRepository db.ReviewRepository) ReviewService {
 	}
 }
 
-func (rs *ReviewServiceImpl) CreateReview(payload *dto.CreateReviewRequestDto) (*models.Review, error) {
+func (r *ReviewServiceImpl) CreateReview(payload *dto.CreateReviewRequestDto) (*models.Review, error) {
 	fmt.Println("Creating Review now at service layer ")
 
-	review, err := rs.ReviewRepository.Create(payload.User_id, payload.Hotel_id, payload.Booking_id, payload.Comment, payload.Rating)
+	if payload.Rating < 1 || payload.Rating > 5 {
+		return nil, fmt.Errorf("Rating must be between 1 and 5")
+	}
+	review, err := r.ReviewRepository.Create(payload.UserId, payload.HotelId, payload.BookingId, payload.Comment, int64(payload.Rating))
 	if err != nil {
-		fmt.Println("error in passing payload to repository layer", err)
+		fmt.Println("Error in creating review at service layer", err)
 		return nil, err
 	}
+	fmt.Println("Review created successfully")
 	return review, nil
 
 }

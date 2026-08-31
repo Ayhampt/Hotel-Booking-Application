@@ -20,9 +20,9 @@ func NewReviewRepository(_db *sql.DB) ReviewRepository {
 	}
 }
 
-func (u *ReviewRepositoryImpl) Create(user_id int64, hotel_id int64, booking_id int64, comment string, rating int64) (*models.Review, error) {
+func (r *ReviewRepositoryImpl) Create(user_id int64, hotel_id int64, booking_id int64, comment string, rating int64) (*models.Review, error) {
 	query := "INSERT INTO reviews (user_id, hotel_id, booking_id, comment, rating) VALUES(?,?,?,?,?)"
-	result, err := u.db.Exec(query, user_id, hotel_id, booking_id, comment, rating)
+	result, err := r.db.Exec(query, user_id, hotel_id, booking_id, comment, rating)
 	if err != nil {
 		fmt.Println("Error in creating new review", err)
 		return nil, err
@@ -33,12 +33,13 @@ func (u *ReviewRepositoryImpl) Create(user_id int64, hotel_id int64, booking_id 
 		return nil, rowErr
 	}
 	review := &models.Review{
-		Id:         lastInsertedId,
-		User_id:    user_id,
-		Hotel_id:   hotel_id,
-		Booking_id: booking_id,
-		Comment:    comment,
-		Rating:     rating,
+		Id:        lastInsertedId,
+		UserId:    user_id,
+		HotelId:   hotel_id,
+		BookingId: booking_id,
+		Comment:   comment,
+		Rating:    rating,
+		IsSynced:  false,
 	}
 	fmt.Println("review created successfully", review)
 	return review, nil

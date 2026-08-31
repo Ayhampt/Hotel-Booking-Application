@@ -2,7 +2,10 @@ package app
 
 import (
 	dbConfig "ReviewService/config/db"
+	"ReviewService/controllers"
+	repo "ReviewService/db/repositories"
 	"ReviewService/routers"
+	"ReviewService/services"
 	"fmt"
 	"net/http"
 	"time"
@@ -29,14 +32,18 @@ func NewApplication(cfg config) *Application {
 }
 
 func (app *Application) Run() error {
-	_, err := dbConfig.SetupDB()
+	db, err := dbConfig.SetupDB()
 	if err != nil {
 		return fmt.Errorf("failed to setup database: %v", err)
 	}
+	rr := repo.NewReviewRepository(db)
+	rs := services.NewReviewService(rr)
+	rc := controllers.NewReviewController(rs)
+	rRouter := routers.NewReviewRouter(rc)
 
 	server := &http.Server{
 		Addr:         app.config.Addr,
-		Handler:      routers.SetupRouter(nil),
+		Handler:      routers.SetupRouter(rRouter),
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
