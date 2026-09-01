@@ -4,6 +4,7 @@ import {
   createIdempotencyKey,
   finalizeIdempotencyKey,
   getIdempotencyKeyWithLock,
+  getBookingById,
 } from "../repositories/booking.repository";
 import { createBookingDto } from "../dto/booking.dto";
 import { generateIdempotencyKey } from "../utils/generateIdempotencyKey";
@@ -38,7 +39,9 @@ export async function createBookingService(createBookingDto: createBookingDto) {
       idempotencyKey: idempotencyKey,
     };
   } catch (error) {
-    throw new InternalServerError("Failed to acquire lock for booking resource");
+    throw new InternalServerError(
+      "Failed to acquire lock for booking resource",
+    );
   }
 }
 
@@ -60,4 +63,12 @@ export async function confirmBookingService(idempotencyKey: string) {
 
     return booking;
   });
+}
+
+export async function getBookingByIdService(bookingId: number) {
+  const booking = await getBookingById(bookingId);
+  if (!booking) {
+    throw new NotFoundError("Booking not found");
+  }
+  return booking;
 }

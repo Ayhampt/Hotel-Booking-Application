@@ -1,7 +1,9 @@
 package app
 
 import (
+	"ReviewService/client"
 	dbConfig "ReviewService/config/db"
+	env "ReviewService/config/env"
 	"ReviewService/controllers"
 	repo "ReviewService/db/repositories"
 	"ReviewService/routers"
@@ -37,7 +39,8 @@ func (app *Application) Run() error {
 		return fmt.Errorf("failed to setup database: %v", err)
 	}
 	rr := repo.NewReviewRepository(db)
-	rs := services.NewReviewService(rr)
+	bc := client.NewBookingClient(env.GetString("BASE_URL", "http://localhost:8081"))
+	rs := services.NewReviewService(rr, *bc)
 	rc := controllers.NewReviewController(rs)
 	rRouter := routers.NewReviewRouter(rc)
 
