@@ -6,7 +6,7 @@ migrate-create:
 	goose -dir $(MIGRATION_DIR) create $(name) sql
 
 migrate-up: # -> gmake migrate-up
-	goose -dir $(MIGRATION_DIR) mysql '$(DB_URL)' up
+	/home/ayham/go/bin/goose -dir $(MIGRATION_DIR) mysql '$(DB_URL)' up
 
 migrate-down: # -> gmake migrate-down
 	goose -dir $(MIGRATION_DIR) mysql '$(DB_URL)' down
