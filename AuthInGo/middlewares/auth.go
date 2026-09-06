@@ -9,11 +9,13 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 
+	dbConfig "AuthInGo/config/db"
 	env "AuthInGo/config/env"
+	repo "AuthInGo/db/repositories"
 )
 
 func JWTAuthMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func (w http.ResponseWriter,r *http.Request)  {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
@@ -33,8 +35,8 @@ func JWTAuthMiddleware(next http.Handler) http.Handler {
 
 		claims := jwt.MapClaims{}
 
-		_,err := jwt.ParseWithClaims(token, &claims, func(token *jwt.Token) (interface{}, error) {
-			return []byte(env.GetString("JWT_SECRET","TOKEN")), nil
+		_, err := jwt.ParseWithClaims(token, &claims, func(token *jwt.Token) (interface{}, error) {
+			return []byte(env.GetString("JWT_SECRET", "TOKEN")), nil
 		})
 
 		if err != nil {
@@ -52,8 +54,38 @@ func JWTAuthMiddleware(next http.Handler) http.Handler {
 
 		fmt.Println("Authenticated user ID:", int64(userId), "Email:", email)
 
-		ctx := context.WithValue(r.Context(),"userID", strconv.FormatFloat(userId,'f',0,64))
-		ctx = context.WithValue(ctx,"email", email)
-		next.ServeHTTP(w,r.WithContext(ctx))
+		ctx := context.WithValue(r.Context(), "userID", strconv.FormatFloat(userId, 'f', 0, 64))
+		ctx = context.WithValue(ctx, "email", email)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+func RequireAllRoles(roles ...string) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			userIdStr := r.Context().Value("userID").(string)
+			userId, err := strconv.ParseInt(userIdStr, 10, 64)
+			if err != nil {
+				http.Error(w, "Invalid user ID", http.StatusUnauthorized)
+				return
+			}
+			dbConn, dbErr := dbConfig.SetupDB()
+			if dbErr != nil {
+				http.Error(w, "Database connection error", http.StatusInternalServerError)
+				return
+			}
+			urr := repo.NewUserRoleRepository(dbConn)
+			hasAllRoles, err := urr.HasAllRoles(userId, roles)
+			if err != nil {
+				http.Error(w, "Error checking roles", http.StatusInternalServerError)
+				return
+			}
+			if !hasAllRoles {
+				http.Error(w, "Forbidden: insufficient roles", http.StatusForbidden)
+				return
+			}
+			next.ServeHTTP(w, r)
+		})
+
+	}
 }
