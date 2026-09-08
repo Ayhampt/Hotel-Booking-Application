@@ -6,6 +6,8 @@ import (
 	"AuthInGo/utils"
 	"fmt"
 	"net/http"
+
+	"github.com/go-chi/chi/v5"
 )
 
 type UserController struct {
@@ -29,7 +31,7 @@ func (uc *UserController) CreateUser(w http.ResponseWriter,r *http.Request) {
 }
 
 func (uc *UserController) GetUserById(w http.ResponseWriter,r *http.Request) {
-	userId := r.URL.Query().Get("id")
+	userId := chi.URLParam(r, "id")
 	if userId == "" {
 		userId = r.Context().Value("userID").(string)
 	}

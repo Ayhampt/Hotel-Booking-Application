@@ -1,11 +1,11 @@
 package app
 
 import (
+	dbConfig "AuthInGo/config/db"
 	"AuthInGo/controllers"
 	repo "AuthInGo/db/repositories"
 	"AuthInGo/routers"
 	"AuthInGo/services"
-	dbConfig "AuthInGo/config/db"
 	"fmt"
 	"net/http"
 	"time"
@@ -19,7 +19,6 @@ type Application struct {
 	Config Config
 }
 
-
 func NewConfig(addr string) Config {
 	return Config{
 		Addr: addr,
@@ -32,27 +31,33 @@ func NewApplication(cfg Config) *Application {
 	}
 }
 
-
 func (app *Application) Run() error {
 
-	db,err := dbConfig.SetupDB()
+	db, err := dbConfig.SetupDB()
 	if err != nil {
-		fmt.Println("Error in setting up database",err)
+		fmt.Println("Error in setting up database", err)
 		return err
 	}
-	ur:= repo.NewUserRepository(db)
-	us:= services.NewUserService(ur)
-	uc:= controllers.NewUserController(us)
-	uRouter:=routers.NewUserRouter(uc)
+
+	ur := repo.NewUserRepository(db)
+	rr := repo.NewRoleRepository(db)
+	rpr := repo.NewRolePermissionRepository(db)
+	pr := repo.NewPermissionRepository(db)
+	urr := repo.NewUserRoleRepository(db)
+	us := services.NewUserService(ur)
+	rs := services.NewRoleService(rr, rpr, urr, pr)
+	uc := controllers.NewUserController(us)
+	rc := controllers.NewRoleController(rs)
+	uRouter := routers.NewUserRouter(uc)
+	rRouter := routers.NewRoleRouter(rc) 
 
 	server := &http.Server{
-		Addr: app.Config.Addr,
-		Handler: routers.SetupRouter(uRouter),
-		ReadTimeout: 10 * time.Second,
+		Addr:         app.Config.Addr,
+		Handler:      routers.SetupRouter(uRouter, rRouter),
+		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
-	fmt.Println("Server is starting in port:",app.Config.Addr)
+	fmt.Println("Server is starting in port:", app.Config.Addr)
 	return server.ListenAndServe()
 
 }
-

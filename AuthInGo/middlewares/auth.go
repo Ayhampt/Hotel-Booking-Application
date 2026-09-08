@@ -65,6 +65,7 @@ func RequireAllRoles(roles ...string) func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			userIdStr := r.Context().Value("userID").(string)
 			userId, err := strconv.ParseInt(userIdStr, 10, 64)
+			fmt.Println("Checking roles for user ID:", userId, "Required roles:", roles)
 			if err != nil {
 				http.Error(w, "Invalid user ID", http.StatusUnauthorized)
 				return

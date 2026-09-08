@@ -50,7 +50,7 @@ func (u *UserRepositoryImpl) Create(username string, email string, hashedPasswor
 func (u *UserRepositoryImpl) GetById(id string) (*models.User,error) {
 	query := "SELECT id,username,email,created_at,updated_at FROM users WHERE id = ?"
 
-	row := u.db.QueryRow(query,1)
+	row := u.db.QueryRow(query,id)
 	user := &models.User{}
 
 	err := row.Scan(&user.Id,&user.Username,&user.Email,&user.CreatedAt,&user.UpdatedAt)
