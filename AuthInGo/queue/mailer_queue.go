@@ -2,25 +2,21 @@ package queue
 
 import (
 	redisConfig "AuthInGo/config/redis"
+	"AuthInGo/dto"
 	"fmt"
 
-	redisqueue "github.com/asheswook/redis-queue"
+	"go.codycody31.dev/gobullmq"
 )
 
 const MAILER_QUEUE = "authMail:mailer-queue"
 
-func NewMailerQueue() (redisqueue.Queue, error) {
+func NewMailerQueue() (*gobullmq.Queue[dto.MailPayload], error) {
 	client := redisConfig.ConnectToRedis()
 	if client == nil {
 		return nil, fmt.Errorf("failed to connect to Redis")
 	}
 
-	cfg := redisqueue.NewConfig()
-	cfg.Redis = client
-	cfg.Queue.Name = MAILER_QUEUE
-	cfg.Safe.AckZSetName = MAILER_QUEUE + ":ack"
-
-	queue, err := redisqueue.NewCommonQueue(cfg)
+	queue, err := gobullmq.NewQueue[dto.MailPayload](MAILER_QUEUE, client, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create mailer queue: %v", err)
 	}

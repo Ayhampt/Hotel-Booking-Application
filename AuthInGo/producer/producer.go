@@ -1,12 +1,11 @@
 package producer
 
 import (
-	"encoding/json"
+	"context"
 
-	queue "AuthInGo/queue"
-
-	"fmt"
 	dto "AuthInGo/dto"
+	queue "AuthInGo/queue"
+	"fmt"
 )
 
 func PushToQueue(payload dto.MailPayload) error {
@@ -14,16 +13,7 @@ func PushToQueue(payload dto.MailPayload) error {
 	if err != nil {
 		return fmt.Errorf("failed to initialize mailer queue: %w", err)
 	}
-	if err != nil {
-		return fmt.Errorf("failed to marshal mail payload: %w", err)
-	}
-
-	payloadJSON, err := json.Marshal(payload)
-	if err != nil {
-		return fmt.Errorf("failed to marshal mail payload: %w", err)
-	}
-
-	err = mailerQueue.Push(string(payloadJSON))
+	_, err = mailerQueue.Add(context.Background(), "verify-email", payload)
 	if err != nil {
 		return fmt.Errorf("failed to push mail payload to queue: %w", err)
 	}

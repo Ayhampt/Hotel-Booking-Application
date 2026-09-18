@@ -61,10 +61,13 @@ func (u *UserServiceImpl) CreateUser(payload *dto.CreateUserRequestDto) (*models
 		return nil, err
 	}
 	if err := pro.PushToQueue(dto.MailPayload{
-		To:      user.Email,
-		Subject: "Verify your email",
-		Body:    fmt.Sprintf("Please verify your email by clicking the following link: %s/verify?token=%s", env.GetString("FRONTEND_URL", "http://localhost:3001"), token),
-		Token:   token,
+		To:         user.Email,
+		Subject:    "Verify your email",
+		TemplateID: "verify-email",
+		Params: dto.MailParams{
+			Token:           token,
+			VerificationURL: fmt.Sprintf("%s/verify?token=%s", env.GetString("FRONTEND_URL", "http://localhost:3001"), token),
+		},
 	}); err != nil {
 		fmt.Println("Failed to push mail payload:", err)
 	}
