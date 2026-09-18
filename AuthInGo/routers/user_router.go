@@ -23,4 +23,5 @@ func (ur *UserRouter) Register(r chi.Router) {
 	r.With(middlewares.CreateUserRequestValidator).Post("/signup",ur.userController.CreateUser)
 	r.With(middlewares.JWTAuthMiddleware,middlewares.RequireAllRoles("user","admin")).Get("/profile",ur.userController.GetUserById)
 	r.With(middlewares.LoginRequestValidator).Post("/login",ur.userController.LoginUser)
+	r.Get("/verify",ur.userController.VerifyUser)
 }

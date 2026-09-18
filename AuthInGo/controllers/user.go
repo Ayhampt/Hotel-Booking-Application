@@ -68,3 +68,18 @@ func (uc *UserController) LoginUser(w http.ResponseWriter,r *http.Request) {
 	utils.WriteJsonSuccessResponse(w,http.StatusOK,"User Logged In Successfully",jwtToken)
 
 }
+
+func (uc *UserController) VerifyUser(w http.ResponseWriter,r *http.Request) {
+	token := r.URL.Query().Get("token")
+	if token == "" {
+		utils.WriteJsonErrorResponse(w, http.StatusBadRequest, "Token is required", fmt.Errorf("missing token"))
+		return
+	}
+
+	err := uc.UserService.VerifyUser(token)
+	if err != nil {
+		utils.WriteJsonErrorResponse(w, http.StatusInternalServerError, "Failed to verify user", err)
+		return
+	}
+	utils.WriteJsonSuccessResponse(w, http.StatusOK, "User verified successfully", nil)
+}

@@ -9,6 +9,7 @@ import (
 	pro "AuthInGo/producer"
 	"AuthInGo/utils"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -18,6 +19,7 @@ type UserService interface {
 	CreateUser(payload *dto.CreateUserRequestDto) (*models.User, error)
 	GetUserById(id string) (*models.User, error)
 	LoginUser(payload *dto.LoginUserRequestDto) (string, error)
+	VerifyUser(token string) error
 }
 
 type UserServiceImpl struct {
@@ -61,7 +63,7 @@ func (u *UserServiceImpl) CreateUser(payload *dto.CreateUserRequestDto) (*models
 	if err := pro.PushToQueue(dto.MailPayload{
 		To:      user.Email,
 		Subject: "Verify your email",
-		Body:    fmt.Sprintf("Please verify your email by clicking the following link: %s/verify?token=%s", env.GetString("FRONTEND_URL", "http://localhost:3000"), token),
+		Body:    fmt.Sprintf("Please verify your email by clicking the following link: %s/verify?token=%s", env.GetString("FRONTEND_URL", "http://localhost:3001"), token),
 		Token:   token,
 	}); err != nil {
 		fmt.Println("Failed to push mail payload:", err)
@@ -115,4 +117,42 @@ func (u *UserServiceImpl) GetUserById(id string) (*models.User, error) {
 		return nil, err
 	}
 	return user, nil
+}
+
+func (u *UserServiceImpl) VerifyUser(token string) error {
+	cache, err := cache.NewCache()
+	if err != nil {
+		fmt.Println("Error connecting to Redis:", err)
+		return err
+	}
+	userId, err := cache.Get(token)
+	if err != nil {
+		fmt.Println("Error getting token from Redis:", err)
+		return err
+	}
+	if userId == "" {
+		fmt.Println("Token not found or expired")
+		return fmt.Errorf("token not found or expired")
+	}
+
+	userIdInt, err := strconv.ParseInt(userId, 10, 64)
+	if err != nil {
+		fmt.Println("Error parsing user ID:", err)
+		return err
+	}
+
+	err = u.userRepository.UpdateIsVerified(userIdInt)
+	if err != nil {
+		fmt.Println("Error verifying user:", err)
+		return err
+	}
+
+	err = cache.Delete(token)
+	if err != nil {
+		fmt.Println("Error deleting token from Redis:", err)
+		return err
+	}
+
+	fmt.Println("User verified successfully with ID:", userId)
+	return nil
 }
