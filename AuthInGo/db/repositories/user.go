@@ -43,6 +43,12 @@ func (u *UserRepositoryImpl) Create(username string, email string, hashedPasswor
 		Username: username,
 		Email:    email,
 	}
+	query = "INSERT INTO user_roles (user_id, role_id) VALUES (?,?)"
+	_, err = u.db.Exec(query, lastInsertedId, 2) 
+	if err != nil {
+		fmt.Println("Error inserting user role", err)
+		return nil, err
+	}
 	fmt.Println("User Created Successfully", user)
 	return user, nil
 }
