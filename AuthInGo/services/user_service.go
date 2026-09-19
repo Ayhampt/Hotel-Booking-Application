@@ -65,7 +65,8 @@ func (u *UserServiceImpl) CreateUser(payload *dto.CreateUserRequestDto) (*models
 		Subject:    "Verify your email",
 		TemplateID: "verify-email",
 		Params: dto.MailParams{
-			Token:           token,
+			Name:            user.Username,
+			AppName:         "Booking.com",
 			VerificationURL: fmt.Sprintf("%s/verify?token=%s", env.GetString("FRONTEND_URL", "http://localhost:3001"), token),
 		},
 	}); err != nil {

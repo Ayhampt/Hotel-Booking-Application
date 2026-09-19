@@ -8,7 +8,7 @@ import (
 	"go.codycody31.dev/gobullmq"
 )
 
-const MAILER_QUEUE = "authMail:mailer-queue"
+const MAILER_QUEUE = "queue-mailer"
 
 func NewMailerQueue() (*gobullmq.Queue[dto.MailPayload], error) {
 	client := redisConfig.ConnectToRedis()

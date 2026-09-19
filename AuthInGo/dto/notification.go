@@ -8,6 +8,7 @@ type MailPayload struct {
 }
 
 type MailParams struct {
-	Token           string `json:"token"`
+	Name            string `json:"name"`
+	AppName         string `json:"appName"`
 	VerificationURL string `json:"verificationUrl"`
 }

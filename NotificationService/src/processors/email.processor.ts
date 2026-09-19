@@ -14,7 +14,7 @@ export const setupMailerWorker = new Worker<NotificationDto>(
     }
     const payload = job.data;
     console.log(`processing email for ${JSON.stringify(payload)}`);
-    
+
     const emailContent = await renderEmailTemplate(
       payload.templateId,
       payload.params,

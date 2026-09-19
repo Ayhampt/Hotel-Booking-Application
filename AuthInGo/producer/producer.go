@@ -13,7 +13,7 @@ func PushToQueue(payload dto.MailPayload) error {
 	if err != nil {
 		return fmt.Errorf("failed to initialize mailer queue: %w", err)
 	}
-	_, err = mailerQueue.Add(context.Background(), "verify-email", payload)
+	_, err = mailerQueue.Add(context.Background(), "payload-mail", payload)
 	if err != nil {
 		return fmt.Errorf("failed to push mail payload to queue: %w", err)
 	}
