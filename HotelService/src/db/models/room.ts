@@ -10,9 +10,10 @@ import sequelize from "./sequelize";
 class Room extends Model<InferAttributes<Room>, InferCreationAttributes<Room>> {
   declare id: CreationOptional<number>;
   declare hotelId: number;
-  declare bookingId: number;
+  declare bookingId?: number;
   declare roomCategoryId: number;
   declare dateOfAvailability: Date;
+  declare price: number;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
   declare deletedAt: CreationOptional<Date | null>;
@@ -47,6 +48,10 @@ Room.init(
     },
     dateOfAvailability: {
       type: "DATE",
+      allowNull: false,
+    },
+    price: {
+      type: "DECIMAL(10, 2)",
       allowNull: false,
     },
     updatedAt: {
