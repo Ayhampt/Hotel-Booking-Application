@@ -36,7 +36,7 @@ Room.init(
     },
     bookingId: {
       type: "INTEGER",
-      allowNull: false,
+      defaultValue: null,
     },
     roomCategoryId: {
       type: "INTEGER",

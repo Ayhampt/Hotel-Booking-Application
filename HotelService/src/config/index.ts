@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 
 type serverConfig = {
   PORT: number;
+  REDIS_PORT: number;
+  REDIS_HOST: string;
 };
 type DBConfig = {
   DB_HOST: string;
@@ -18,6 +20,8 @@ loadEnv();
 
 export const serverConfig: serverConfig = {
   PORT: Number(process.env.PORT) || 8080,
+  REDIS_PORT: Number(process.env.REDIS_PORT) || 6378,
+  REDIS_HOST: process.env.REDIS_HOST || "localhost",
 };
 export const DBConfig: DBConfig = {
   DB_HOST: process.env.DB_HOST || "localhost",

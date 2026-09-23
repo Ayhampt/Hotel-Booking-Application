@@ -1,16 +1,13 @@
-import { Request, Response, NextFunction } from "express";
-import { generateRooms } from "../services/roomGeneration.service";
+import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
+import { addRoomGenerationJobToQueue } from "../producers/roomGeneration.producer";
 
-export async function generateRoomsHandler(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
-  const result = await generateRooms(req.body);
+export async function generateRoomHandler(req: Request, res: Response) {
+  await addRoomGenerationJobToQueue(req.body);
+
   res.status(StatusCodes.OK).json({
-    message: " Rooms generated successfully",
-    data: result,
+    message: "Room generation job added to queue",
     success: true,
+    data: {},
   });
 }

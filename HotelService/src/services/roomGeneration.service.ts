@@ -1,4 +1,3 @@
-import { date } from "zod";
 import RoomCategory from "../db/models/roomCategory";
 import { roomGenerationJob } from "../dto/roomGeneration.dto";
 import { RoomRepository } from "../repositories/room.repository";
@@ -43,7 +42,8 @@ export async function generateRooms(jobData: roomGenerationJob) {
   const totalDays = Math.ceil(
     (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24),
   );
-  logger.info(`Generating rooms for category ID ${jobData.roomCategoryId} from ${jobData.startDate} to ${jobData.endDate}. Total days: ${totalDays}`,
+  logger.info(
+    `Generating rooms for category ID ${jobData.roomCategoryId} from ${jobData.startDate} to ${jobData.endDate}. Total days: ${totalDays}`,
   );
   const batchSize = jobData.bachSize || 100;
 
@@ -51,21 +51,25 @@ export async function generateRooms(jobData: roomGenerationJob) {
 
   while (currentDate <= endDate) {
     const batchEndDate = new Date(currentDate);
-    batchEndDate.setDate(batchEndDate.getDate() + batchSize);
+
+    batchEndDate.setDate(batchEndDate.getDate() + batchSize - 1);
 
     if (batchEndDate > endDate) {
       batchEndDate.setTime(endDate.getTime());
     }
+
     const batchResult = await processDateBatch(
       roomCategory,
       currentDate,
       batchEndDate,
       jobData.priceOverride,
     );
+
     totalRoomsCreated += batchResult.roomsCreated;
     totalDatesProcessed += batchResult.dateProcessed;
 
     currentDate.setTime(batchEndDate.getTime());
+    currentDate.setDate(currentDate.getDate() + 1);
   }
   return {
     totalRoomsCreated,
@@ -81,33 +85,37 @@ export async function processDateBatch(
 ) {
   let roomsCreated = 0;
   let dateProcessed = 0;
+
   const roomsToCreate: CreationAttributes<Room>[] = [];
 
   const currentDate = new Date(startDate);
 
   while (currentDate <= endDate) {
-    const existingRooms = await roomRepository.findBuyRoomCategoryIdAndDate(
+    const existingRooms = await roomRepository.findByRoomCategoryIdAndDate(
       roomCategory.id,
       currentDate,
     );
+
     if (!existingRooms) {
       roomsToCreate.push({
         hotelId: roomCategory.hotelId,
         roomCategoryId: roomCategory.id,
-        dateOfAvailability: currentDate,
-        price: priceOverride || roomCategory.price,
+        dateOfAvailability: new Date(currentDate),
+        price: priceOverride ?? roomCategory.price,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
     }
+
     currentDate.setDate(currentDate.getDate() + 1);
     dateProcessed++;
-
-    if (roomsToCreate.length >= 0) {
-      await roomRepository.bulkCreate(roomsToCreate);
-      roomsCreated += roomsToCreate.length;
-    }
   }
+
+  if (roomsToCreate.length > 0) {
+    await roomRepository.bulkCreate(roomsToCreate);
+    roomsCreated = roomsToCreate.length;
+  }
+
   return {
     roomsCreated,
     dateProcessed,

@@ -6,7 +6,7 @@ export class RoomRepository extends BaseRepository<Room> {
   constructor() {
     super(Room);
   }
-  async findBuyRoomCategoryIdAndDate(
+  async findByRoomCategoryIdAndDate(
     roomCategoryId: number,
     currentDate: Date,
   ) {

@@ -4,6 +4,7 @@ import v1Router from "./routers/v1/index.router";
 import { genericErrorHandler } from "./middlewares/error.middleware";
 import logger from "./config/logger";
 import { attachCorrelationMiddleware } from "./middlewares/correlationId.middleware";
+import { setupRoomGenerationWorker } from "./processors/roomGeneration.processor";
 
 const app = express();
 
@@ -20,4 +21,5 @@ app.use(genericErrorHandler);
 app.listen(serverConfig.PORT, () => {
   logger.info(`Server running on port http://localhost:${serverConfig.PORT}`);
   logger.info(`press CTL+C to stop the Server`);
+  setupRoomGenerationWorker()
 });

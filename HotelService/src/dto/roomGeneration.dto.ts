@@ -13,7 +13,7 @@ export const roomGenerationJobSchema = z.object({
   roomCategoryId: z.number().positive(),
   startDate: z.iso.datetime(),
   endDate: z.iso.datetime(),
-  priceOverride: z.number().positive(),
+  priceOverride: z.number().positive().optional(),
   bachSize: z.number().positive().default(100),
 });
 
