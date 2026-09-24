@@ -45,7 +45,7 @@ export async function generateRooms(jobData: roomGenerationJob) {
   logger.info(
     `Generating rooms for category ID ${jobData.roomCategoryId} from ${jobData.startDate} to ${jobData.endDate}. Total days: ${totalDays}`,
   );
-  const batchSize = jobData.bachSize || 100;
+  const batchSize = jobData.batchSize || 100;
 
   const currentDate = new Date(startDate);
 

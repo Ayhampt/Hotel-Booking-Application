@@ -21,4 +21,15 @@ export class RoomRepository extends BaseRepository<Room> {
   async bulkCreate(roomsToCreate: CreationAttributes<Room>[]) {
     return await this.model.bulkCreate(roomsToCreate);
   }
+
+  async findLatestAvailabilityPerCategory() {
+    return await this.model.findAll({
+      attributes: [
+        "roomCategoryId",
+        [this.model.sequelize!.fn("MAX", this.model.sequelize!.col("dateOfAvailability")), "lastDate"],
+      ],
+      group: ["roomCategoryId"],
+      raw: true,
+    });
+  }
 }

@@ -14,7 +14,7 @@ export const roomGenerationJobSchema = z.object({
   startDate: z.iso.datetime(),
   endDate: z.iso.datetime(),
   priceOverride: z.number().positive().optional(),
-  bachSize: z.number().positive().default(100),
+  batchSize: z.number().positive().default(100),
 });
 
 export type roomGenerationJob = z.infer<typeof roomGenerationJobSchema>;
