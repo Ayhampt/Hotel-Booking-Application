@@ -10,7 +10,7 @@ import sequelize from "./sequelize";
 class Room extends Model<InferAttributes<Room>, InferCreationAttributes<Room>> {
   declare id: CreationOptional<number>;
   declare hotelId: number;
-  declare bookingId?: number;
+  declare bookingId?: number | null;
   declare roomCategoryId: number;
   declare dateOfAvailability: Date;
   declare price: number;

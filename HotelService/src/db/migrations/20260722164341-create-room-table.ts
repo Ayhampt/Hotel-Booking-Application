@@ -7,7 +7,7 @@ export default {
         id INT NOT NULL AUTO_INCREMENT,
         hotel_id INT NOT NULL,
         booking_id INT,
-        room_category INT NOT NULL,
+        room_category_id INT NOT NULL,
         date_of_availability DATE NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

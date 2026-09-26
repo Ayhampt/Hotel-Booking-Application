@@ -15,7 +15,7 @@ let cronJob: cron.ScheduledTask | null = null;
  * Start the room availability extension scheduler
  * Runs every minute to extend room availability by one day
  */
-export const startScheduler = (): void => {
+export const initRoomAvailabilityScheduler = (): void => {
   if (cronJob) {
     logger.warn("Room scheduler is already running");
     return;
