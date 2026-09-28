@@ -3,6 +3,9 @@ export type createBookingDto = {
   hotelId: number;
   bookingAmount: number;
   totalGuests: number;
+  roomCategoryId: number;
+  checkInDate: string;
+  checkOutDate: string;
 };
 
 export type confirmBookingParamsDto = {

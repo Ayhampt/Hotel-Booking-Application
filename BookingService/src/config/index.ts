@@ -5,6 +5,7 @@ type serverConfig = {
   PORT: number;
   REDIS_URL: string;
   LOCK_TTL: number;
+  HOTEL_SERVICE_URL?: string;
 };
 type DBConfig = {
   DB_HOST: string;
@@ -22,6 +23,7 @@ export const serverConfig: serverConfig = {
   PORT: Number(process.env.PORT) || 8080,
   REDIS_URL: process.env.REDIS_URL || "redis://localhost:6379",
   LOCK_TTL: Number(process.env.LOCK_TTL) || 60000,
+  HOTEL_SERVICE_URL: process.env.HOTEL_SERVICE_URL || "http://localhost:8080/api/v1",
 };
 export const DBConfig: DBConfig = {
   DB_HOST: process.env.DB_HOST || "localhost",
