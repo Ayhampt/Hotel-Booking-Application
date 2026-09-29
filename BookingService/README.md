@@ -1,4 +1,4 @@
-## 📖 API Reference & Booking Flow
+# API Reference & Booking Flow
 
 The Booking Service utilizes a **Two-Phase Booking Pattern** (Initiate -> Confirm) and leverages **Redis** as a distributed cache to ensure idempotency during the confirmation phase, preventing race conditions and double-bookings.
 
